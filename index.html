@@ -696,6 +696,7 @@ async function dbLoad() {
     });
 
     localStorage.setItem('incinx_v2', JSON.stringify(db));
+    DB = db;
   } catch (e) {
     console.log('Supabase sync failed', e);
   }
