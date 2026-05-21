@@ -653,7 +653,29 @@ textarea{resize:vertical;line-height:1.5}
 // DATA
 const DB_KEY='incinx_v2';
 let DB={invoices:[],clients:[],vendors:[],projects:[],expenses:[],petty:[],quotations:[],proforma:[],expo:[],gstBills:[],informal:[],pin:'',settings:{gstin:'27AAIFI8055M1ZS',pan:'AAIFI8055M',hsn:'998313',companyName:'INCINX',address:'Adarsh Association Sec-5, Sec-5, CBD Belapur, Thane',city:'Navi Mumbai, MH 400614',mobile:'8591570401',email:'',logoData:'',qrData:'',signData:'',bankName:'ICICI Bank Limited',bankAcc:'040805004684',bankIFSC:'ICIC0000408',bankBranch:'Nerul',defaultTnC:'1) This is final cost of the project described.\n2) Payment term is 15 days from the date of final invoice.\n3) Penalty of INR 500 per day will be charged for uncleared bills over 15 days.\n4) Subject to local jurisdiction.',defaultNotes:'Thank you for trusting us with your business'}};
-function dbSave(){try{localStorage.setItem(DB_KEY,JSON.stringify(DB));}catch(e){} gdAutoSave();}
+function dbSave(){try{localStorage.setItem(DB_KEY,JSON.stringify(DB));}catch(e){} gdAutoSave(); supabaseSave();}
+
+async function supabaseSave(){
+  const SURL="https://fgrsllqmkpjqyvknzizp.supabase.co";
+  const SKEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZncnNsbHFta3BqcXl2a256aXpwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTE2OTAyMCwiZXhwIjoyMDk0NzQ1MDIwfQ.uBKC2qVFykzVr354MpD0c36RaNSmvry6AF7--zQoMs4";
+  const headers={"apikey":SKEY,"Authorization":`Bearer ${SKEY}`,"Content-Type":"application/json","Prefer":"return=minimal"};
+  try{
+    const sections=Object.keys(DB);
+    for(const section of sections){
+      const data=DB[section];
+      // Delete existing rows for this section
+      await fetch(`${SURL}/rest/v1/app_data?section=eq.${section}`,{method:'DELETE',headers});
+      // Re-insert
+      if(Array.isArray(data)){
+        for(const item of data){
+          await fetch(`${SURL}/rest/v1/app_data`,{method:'POST',headers,body:JSON.stringify({section,data:item})});
+        }
+      } else {
+        await fetch(`${SURL}/rest/v1/app_data`,{method:'POST',headers,body:JSON.stringify({section,data})});
+      }
+    }
+  }catch(e){console.error('Supabase save failed',e);}
+}
 function toggleDark(){
   const isDark=document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme',isDark?'light':'dark');
