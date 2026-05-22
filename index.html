@@ -4936,8 +4936,7 @@ async function loadVendors() {
     tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--ink3)">No vendors registered yet</td></tr>'
     return
   }
-
-  tbody.innerHTML = data.map(v => `
+tbody.innerHTML = data.map(v => `
     <tr>
       <td>${v.name || '-'}</td>
       <td>${v.email || '-'}</td>
