@@ -2886,6 +2886,34 @@ function downloadVendorPDF(){
   w.document.close();
   setTimeout(()=>{w.print();},400);
 }
+  async function populateVendorDropdowns() {
+  const { data, error } = await _sb.from('vendors').select('*').eq('data->>status', 'approved')
+  if (error || !data) return;
+
+  // Target all vendor dropdowns
+  const dropdowns = [
+    document.getElementById('ex_vendorSel'),
+    document.getElementById('gbmVendorSel')
+  ].filter(Boolean)
+
+  data.forEach(v => {
+    const d = v.data || {}
+    const label = `${d.biz || d.name || 'Unnamed'} (${d.mobile || ''})`
+    dropdowns.forEach(sel => {
+      // Avoid duplicates
+      const exists = Array.from(sel.options).some(o => o.value === String(v.id))
+      if (!exists) {
+        const opt = document.createElement('option')
+        opt.value = v.id
+        opt.textContent = label
+        sel.appendChild(opt)
+      }
+    })
+  })
+}
+
+// Call it on page load
+document.addEventListener('DOMContentLoaded', populateVendorDropdowns)
 
 function renderExpenses(el){
   const total=DB.expenses.reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
