@@ -5016,7 +5016,11 @@ const _vendorObs = new MutationObserver(() => {
     loadVendors()
   }
 })
-_vendorObs.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['style', 'class'] })
+document.addEventListener('click', function(e) {
+  if (e.target.closest('[data-page="vendors"], #pg-vendors, #vendors, .nav-item')) {
+    setTimeout(loadVendors, 300)
+  }
+})
 </script>
 </body>
 </html>
