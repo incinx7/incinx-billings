@@ -4936,24 +4936,29 @@ async function loadVendors() {
     tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--ink3)">No vendors registered yet</td></tr>'
     return
   }
-tbody.innerHTML = data.map(v => `
+tbody.innerHTML = data.map(v => {
+    const d = v.data || {}
+    const status = d.status || v.status || 'pending'
+    return `
     <tr>
-      <td>${v.name || '-'}</td>
-      <td>${v.email || '-'}</td>
-      <td>${v.phone || '-'}</td>
-      <td>${v.company || v.business_name || '-'}</td>
-      <td>
-        <span class="badge ${
-          v.status === 'approved' ? 'badge-green' :
-          v.status === 'rejected' ? 'badge-red' : 'badge-amber'
-        }">${v.status || 'pending'}</span>
-      </td>
+      <td>${d.biz || d.name || '-'}</td>
+      <td>${d.vendorType || '-'}</td>
+      <td>${d.cat || '-'}</td>
+      <td>${d.mobile || '-'}</td>
+      <td>${d.pan || '-'}</td>
+      <td>${d.gst || '-'}</td>
+      <td>${d.bank || '-'}</td>
+      <td>${d.upi || '-'}</td>
+      <td><span class="badge ${
+        status === 'approved' ? 'badge-green' :
+        status === 'rejected' ? 'badge-red' : 'badge-amber'
+      }">${status}</span></td>
       <td>
         <button onclick="approveVendor('${v.id}')" class="btn btn-sm" style="color:var(--green);border-color:var(--green)">Approve</button>
         <button onclick="rejectVendor('${v.id}')" class="btn btn-sm btn-danger" style="margin-left:4px">Reject</button>
       </td>
-    </tr>
-  `).join('')
+    </tr>`
+  }).join('')
 }
 
 async function approveVendor(id) {
