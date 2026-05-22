@@ -4960,14 +4960,21 @@ tbody.innerHTML = data.map(v => {
     </tr>`
   }).join('')
 }
-
 async function approveVendor(id) {
-  await _sb.from('vendors').update({ status: 'approved' }).eq('id', id)
+  const { data: rows, error: fetchError } = await _sb.from('vendors').select('data').eq('id', id)
+  if (fetchError || !rows || rows.length === 0) { alert('Vendor not found'); return; }
+  const updated = { ...rows[0].data, status: 'approved' }
+  const { error } = await _sb.from('vendors').update({ data: updated }).eq('id', id)
+  if (error) { alert('Failed: ' + error.message); return; }
   loadVendors()
 }
 
 async function rejectVendor(id) {
-  await _sb.from('vendors').update({ status: 'rejected' }).eq('id', id)
+  const { data: rows, error: fetchError } = await _sb.from('vendors').select('data').eq('id', id)
+  if (fetchError || !rows || rows.length === 0) { alert('Vendor not found'); return; }
+  const updated = { ...rows[0].data, status: 'rejected' }
+  const { error } = await _sb.from('vendors').update({ data: updated }).eq('id', id)
+  if (error) { alert('Failed: ' + error.message); return; }
   loadVendors()
 }
 
