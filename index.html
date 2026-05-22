@@ -4951,6 +4951,25 @@ async function loadVendors() {
     .order('created_at', { ascending: false })
 
   if (error) { console.error('Vendor fetch error:', error); return; }
+  if (error) { console.error('Vendor fetch error:', error); return; }
+
+// ✅ FIX: Merge approved Supabase vendors into DB.vendors so dropdowns see them
+const approvedFromSupabase = (data || [])
+  .filter(v => (v.data?.status || v.status) === 'approved')
+  .map(v => v.data || {});
+
+// Merge: keep manually-added ones, add Supabase ones that aren't already there
+const existingNames = new Set(DB.vendors.map(v => (v.biz || v.name || '').toLowerCase()));
+approvedFromSupabase.forEach(v => {
+  const name = (v.biz || v.name || '').toLowerCase();
+  if (name && !existingNames.has(name)) {
+    DB.vendors.push(v);
+    existingNames.add(name);
+  }
+});
+
+// Try all common vendor table body ids
+const tbody = ...
 
   // Try all common vendor table body ids
   const tbody = document.querySelector('#vdTbl tbody') || document.getElementById('vdTbl')
