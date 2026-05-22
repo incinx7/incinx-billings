@@ -1473,7 +1473,7 @@ function exCalcGST(){
   document.getElementById('exNetPayable').textContent='₹'+fmt(netPayable);
 }
 function openExpenseModal(editIdx){
-  loadVendors().then(() => populateVendorDropdowns());
+  loadVendors().then(() => { popVendorSel('exvendorSel'); });
   exEditIdx=(editIdx!==undefined)?editIdx:null;
   document.getElementById('exModalTitle').textContent=exEditIdx!==null?'Edit Expense':'Add Expense';
   if(exEditIdx!==null){
@@ -4968,7 +4968,8 @@ approvedFromSupabase.forEach(v => {
     existingNames.add(name);
   }
 });
-populateVendorDropdowns();
+popVendorSel('exvendorSel');
+popVendorSel('gbmVendorSel');
 // Try all common vendor table body ids
 const tbody = ...
 
