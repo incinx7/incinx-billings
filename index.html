@@ -4925,15 +4925,7 @@ async function loadVendors() {
   if (error) { console.error('Vendor fetch error:', error); return; }
 
   // Try all common vendor table body ids
-  const tbody = document.getElementById('vendor-tbody')
-    || document.getElementById('vendorTbody')
-    || document.getElementById('vendorsBody')
-    || document.getElementById('vendor-list')
-    || document.querySelector('[data-vendor-table] tbody')
-    || document.querySelector('#pg-vendors tbody')
-    || document.querySelector('#page-vendors tbody')
-    || document.querySelector('#vendors tbody')
-    || document.querySelector('.vendor-table tbody')
+  const tbody = document.querySelector('#vdTbl tbody') || document.getElementById('vdTbl')
 
   if (!tbody) {
     console.warn('Vendor tbody not found — check your HTML')
