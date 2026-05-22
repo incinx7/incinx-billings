@@ -2887,39 +2887,27 @@ function downloadVendorPDF(){
   setTimeout(()=>{w.print();},400);
 }
   async function populateVendorDropdowns() {
-  const { data, error } = await _sb.from('vendors').select('*')
+  const { data, error } = await _sb.from('vendors').select('*').eq('data->>status', 'approved')
   if (error || !data) return;
 
+  // Target all vendor dropdowns
   const dropdowns = [
     document.getElementById('ex_vendorSel'),
-    document.getElementById('exVendorLookup'),
     document.getElementById('gbmVendorSel')
   ].filter(Boolean)
 
   data.forEach(v => {
     const d = v.data || {}
-    const label = d.biz || d.name || 'Unnamed'
+    const label = `${d.biz || d.name || 'Unnamed'} (${d.mobile || ''})`
     dropdowns.forEach(sel => {
-      const exists = Array.from(sel.options).some(o => o.value === 'sb_' + v.id)
+      // Avoid duplicates
+      const exists = Array.from(sel.options).some(o => o.value === String(v.id))
       if (!exists) {
         const opt = document.createElement('option')
-        opt.value = 'sb_' + v.id
+        opt.value = v.id
         opt.textContent = label
         sel.appendChild(opt)
       }
-    })
-  })
-}
-
-// Hook into openExpenseModal so vendors load every time form opens
-const _origOpenExpenseModal = window.openExpenseModal
-window.openExpenseModal = function(...args) {
-  if(_origOpenExpenseModal) _origOpenExpenseModal.apply(this, args)
-  setTimeout(populateVendorDropdowns, 300)
-}
-
-// Also run on page load
-document.addEventListener('DOMContentLoaded', populateVendorDropdowns)
     })
   })
 }
