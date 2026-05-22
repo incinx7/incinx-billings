@@ -4908,6 +4908,85 @@ window.addEventListener("load", function(){
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='n'){e.preventDefault();openNewInvoice();}if((e.metaKey||e.ctrlKey)&&e.key==='l'){e.preventDefault();lockApp();}});
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ── SUPABASE VENDOR FETCH ──
+const _sb = supabase.createClient(
+  'https://fgrsllqmkpjqyvknzizp.supabase.co',
+  'sb_publishable_69Q9JFg-b72HErGOJ4Sk8A_HYt5RV3O'
+)
+
+async function loadVendors() {
+  const { data, error } = await _sb
+    .from('vendors')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) { console.error('Vendor fetch error:', error); return; }
+
+  // Try all common vendor table body ids
+  const tbody = document.getElementById('vendor-tbody')
+    || document.getElementById('vendorTbody')
+    || document.getElementById('vendorsBody')
+    || document.getElementById('vendor-list')
+    || document.querySelector('[data-vendor-table] tbody')
+    || document.querySelector('#pg-vendors tbody')
+    || document.querySelector('#page-vendors tbody')
+    || document.querySelector('#vendors tbody')
+    || document.querySelector('.vendor-table tbody')
+
+  if (!tbody) {
+    console.warn('Vendor tbody not found — check your HTML')
+    return
+  }
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--ink3)">No vendors registered yet</td></tr>'
+    return
+  }
+
+  tbody.innerHTML = data.map(v => `
+    <tr>
+      <td>${v.name || '-'}</td>
+      <td>${v.email || '-'}</td>
+      <td>${v.phone || '-'}</td>
+      <td>${v.company || v.business_name || '-'}</td>
+      <td>
+        <span class="badge ${
+          v.status === 'approved' ? 'badge-green' :
+          v.status === 'rejected' ? 'badge-red' : 'badge-amber'
+        }">${v.status || 'pending'}</span>
+      </td>
+      <td>
+        <button onclick="approveVendor('${v.id}')" class="btn btn-sm" style="color:var(--green);border-color:var(--green)">Approve</button>
+        <button onclick="rejectVendor('${v.id}')" class="btn btn-sm btn-danger" style="margin-left:4px">Reject</button>
+      </td>
+    </tr>
+  `).join('')
+}
+
+async function approveVendor(id) {
+  await _sb.from('vendors').update({ status: 'approved' }).eq('id', id)
+  loadVendors()
+}
+
+async function rejectVendor(id) {
+  await _sb.from('vendors').update({ status: 'rejected' }).eq('id', id)
+  loadVendors()
+}
+
+// Load vendors when page loads
+document.addEventListener('DOMContentLoaded', loadVendors)
+
+// Also reload whenever vendors section becomes visible
+const _vendorObs = new MutationObserver(() => {
+  const el = document.querySelector('#pg-vendors, #page-vendors, #vendors, [data-page="vendors"]')
+  if (el && el.style.display !== 'none' && !el.classList.contains('hidden')) {
+    loadVendors()
+  }
+})
+_vendorObs.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['style', 'class'] })
+</script>
 </body>
 </html>
 
