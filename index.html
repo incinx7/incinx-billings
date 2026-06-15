@@ -4970,16 +4970,13 @@ approvedFromSupabase.forEach(v => {
 });
 popVendorSel('ex_vendorSel');
 popVendorSel('gbmVendorSel');
-// Try all common vendor table body ids
-const tbody = ...
 
-  // Try all common vendor table body ids
-  const tbody = document.querySelector('#vdTbl tbody') || document.getElementById('vdTbl')
+const tbody = document.querySelector('#vdTbl tbody') || document.getElementById('vdTbl');
 
-  if (!tbody) {
-    console.warn('Vendor tbody not found — check your HTML')
-    return
-  }
+if (!tbody) {
+  console.warn('Vendor tbody not found — check your HTML');
+  return;
+}
 
   if (!data || data.length === 0) {
     tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--ink3)">No vendors registered yet</td></tr>'
