@@ -2692,7 +2692,7 @@ function renderProjects(el){
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           ${projVal>0?`<span style="font-size:13px;font-weight:600;color:var(--green)">&#x20B9;${fmt(projVal)}</span>`:''}
           <button class="btn btn-sm" onclick="openProjectModal(${i})">&#x270F; Edit</button>
-          <button class="btn btn-sm btn-primary" onclick="openExpenseModal();setTimeout(()=>{document.getElementById('ex_project').value='${p.name}';},150)">+ Expense</button>
+          <button class="btn btn-sm btn-primary" onclick="openExpenseModal()">+ Expense</button>
           <button class="btn btn-sm btn-danger" onclick="deleteProject(${i})">Delete</button>
         </div>
       </div>
